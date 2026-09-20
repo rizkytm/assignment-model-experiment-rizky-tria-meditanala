@@ -60,9 +60,17 @@ Split data: 160 baris training, 40 baris test — test set yang sama dipakai ked
 | :---- | :-------------------------- | :--------------------- |
 | Preprocessing | TF-IDF, `ngram_range=(1, 2)` | Tanpa preprocessing (teks mentah di prompt) |
 | Model | `LogisticRegression(max_iter=1000)` | `gemini-3.5-flash-lite` |
-| Pendekatan | Supervised training | Few-shot prompting, `temperature=0.0` |
+| Pendekatan | Supervised training | Few-shot prompting (2 contoh), `temperature=0.0` |
 | Waktu inferensi | Hitungan milidetik per ulasan | ~4.5 detik per ulasan (jeda antar-panggilan) |
 | Biaya | Nol (lokal) | Berbayar per token |
+
+### Desain Prompt (LLM API)
+
+Prompt few-shot dengan kontrak output tegas: jawaban harus tepat satu kata — `positif` atau `negatif`.
+
+- **Few-shot (2 contoh)** memperjelas format jawaban ke LLM sehingga output konsisten dan mudah dinormalisasi; biaya tambahannya kecil (dua baris teks per panggilan).
+- **`temperature=0.0`** agar output deterministik dan konsisten antar-run — klasifikasi butuh kepastian, bukan kreativitas.
+- **`gemini-3.5-flash-lite`** dipilih karena termurah dan tercepat, cukup untuk klasifikasi biner sederhana; free tier dibatasi 15 request/menit per model, ditangani retry otomatis + jeda 4.5 detik antar-panggilan.
 
 ## Hasil Evaluasi
 
